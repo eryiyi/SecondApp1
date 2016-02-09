@@ -239,6 +239,12 @@ public class StringUtil {
         }
     }
 
+    public static String getStrFromJson(String a){
+        String regEx="[^0-9]";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(a);
+        return m.replaceAll("").trim();
+    }
 
 
 }

@@ -305,5 +305,11 @@
         6. 如双方就本协议内容或其执行发生任何争议，双方应尽力友好协商解决；协商不成时，任何一方均可向本站所在地的人民法院提起诉讼。
         7. 优菜宝在法律允许最大范围对本协议拥有解释权与修改权。</string>
 
+    <string name="saoasao">扫啊扫</string>
+    <string name="scan_text"></string>
+    <string name="saoyisao">扫一扫</string>
+    <string name="saoerror">扫描失败，请稍后重试</string>
+    <string name="saoerro1r">扫描确认失败，已扫描</string>
+    <string name="saosuccess">扫描成功</string>
 
 </resources>

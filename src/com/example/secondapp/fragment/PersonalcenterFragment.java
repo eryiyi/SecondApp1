@@ -7,23 +7,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Message;
 import com.example.secondapp.SecondApplication;
+import com.example.secondapp.activity.*;
 import com.example.secondapp.adapter.AnimateFirstDisplayListener;
 import com.example.secondapp.base.BaseFragment;
+import com.example.secondapp.bean.Response;
 import com.example.secondapp.util.StringUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.example.secondapp.R;
-import com.example.secondapp.activity.HelpAndFeedback;
-import com.example.secondapp.activity.Logon;
-import com.example.secondapp.activity.MyCollection;
-import com.example.secondapp.activity.MyOrder;
-import com.example.secondapp.activity.PersonalMsg;
-import com.example.secondapp.activity.Register;
-import com.example.secondapp.activity.Setting;
-import com.example.secondapp.activity.ShoppingCartList;
 import com.example.secondapp.http.AsyncHttpResponseHandler;
 import com.example.secondapp.http.HttpClientUtils;
 import com.example.secondapp.http.HttpParams;
@@ -48,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PersonalcenterFragment extends BaseFragment implements OnClickListener, OnUploadProcessListener{
+	private final static int SCANNIN_GREQUEST_CODE = 1;
 	View view;
 	TextView logon;
 	TextView register;
@@ -62,6 +59,7 @@ public class PersonalcenterFragment extends BaseFragment implements OnClickListe
 	RelativeLayout personalorder;
 	RelativeLayout personalhelpandfeddback;
 	RelativeLayout personalcenter;
+	RelativeLayout personalsao;
 	RelativeLayout personalcenter2;
 	TextView username;
 	TextView clickcheck;
@@ -99,6 +97,7 @@ public class PersonalcenterFragment extends BaseFragment implements OnClickListe
 		personalsetting = (RelativeLayout) view.findViewById(R.id.personalsetting);
 		personalorder = (RelativeLayout) view.findViewById(R.id.personalorder);
 		personalhelpandfeddback = (RelativeLayout) view.findViewById(R.id.personalhelpandfeddback);
+		personalsao = (RelativeLayout) view.findViewById(R.id.personalsao);
 		personalcenter = (RelativeLayout) view.findViewById(R.id.personalcenter);
 		personalcenter2 = (RelativeLayout) view.findViewById(R.id.personalcenter2);
 		username = (TextView) view.findViewById(R.id.username);
@@ -128,6 +127,7 @@ public class PersonalcenterFragment extends BaseFragment implements OnClickListe
 		personalhelpandfeddback.setOnClickListener(this);
 		personalcenter.setOnClickListener(this);
 		personalcenter2.setOnClickListener(this);
+		personalsao.setOnClickListener(this);
 		lin1.setOnClickListener(this);
 		lin2.setOnClickListener(this);
 		lin3.setOnClickListener(this);
@@ -281,10 +281,97 @@ public class PersonalcenterFragment extends BaseFragment implements OnClickListe
 			intent11.putExtra("class", 3);
 			startActivity(intent11);
 			break;
+			case R.id.personalsao:
+				//
+				//扫一扫
+			{
+				if ("0".equals(getGson().fromJson(getSp().getString("is_login", ""), String.class))) {
+					Intent nouser = new Intent(getActivity(), Logon.class);
+					nouser.putExtra("nozero", 3);
+					startActivity(nouser);
+				}else{
+					Intent intentsao = new Intent();
+					intentsao.setClass(getActivity(), MipcaActivityCapture.class);
+					intentsao.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivityForResult(intentsao, SCANNIN_GREQUEST_CODE);
+				}
+
+			}
+
+				break;
 		default:
 			break;
 		}
 	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+			case SCANNIN_GREQUEST_CODE:
+				if(resultCode == getActivity().RESULT_OK){
+//					Bundle bundle = data.getExtras();
+//					//显示扫描到的内容
+//					String result = bundle.getString("result");
+//					String str = StringUtil.getStrFromJson(result);
+//					saoyisao(str);
+				}
+				break;
+		}
+	}
+
+
+
+	void saoyisao(String result){
+//		HttpParams params = new HttpParams();
+//		params.put("user_name", SecondApplication.user_name);
+//		params.put("order_id", result);
+//		HttpClientUtils.getInstance().post(ServerId.serveradress, ServerId.SCAN_URL, params, new AsyncHttpResponseHandler(){
+//			@Override
+//			public void onSuccess(JSONObject jsonObject) {
+//				try {
+////					object = jsonObject.getJSONObject("data");
+//					Response.code = jsonObject.getInt("code");
+//				} catch (JSONException e) {
+//					e.printStackTrace();
+//				}finally{
+//					Message message = new Message();
+//					message.what = 123;
+//					handler.sendMessage(message);
+//				}
+//			}
+//		});
+	}
+
+	Handler handler = new Handler(new Handler.Callback() {
+
+		@Override
+		public boolean handleMessage(Message msg) {
+			switch (msg.what) {
+				case 123:
+					if(Response.code == 200 ){
+						//
+						Toast.makeText(getActivity(), R.string.saosuccess, Toast.LENGTH_SHORT).show();
+//						Intent intent = new Intent("address_success");
+//						getActivity().sendBroadcast(intent);
+					}
+					else if(Response.code == -1 ){
+						Toast.makeText(getActivity(), R.string.saoerro1r, Toast.LENGTH_SHORT).show();
+					}
+
+					else{
+						Toast.makeText(getActivity(), R.string.saoerror, Toast.LENGTH_SHORT).show();
+					}
+					break;
+				default:
+					break;
+			}
+			return true;
+		}
+	});
+
+
+
 	@Override
 	public void onResume() {
 		if ("1".equals(getGson().fromJson(getSp().getString("is_login", ""), String.class))) {
